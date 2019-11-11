@@ -42,12 +42,12 @@ public class UserProfileFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         String userId = getArguments().getString(ARGUMENT_USER_ID);
-        UserProfileViewModelFactory factory = InjectorUtils.provideUserProfileViewModelFactory();
+        UserProfileViewModelFactory factory = InjectorUtils.provideUserProfileViewModelFactory(getContext());
         mViewModel = ViewModelProviders.of(this, factory).get(UserProfileViewModel.class);
         mViewModel.init(userId);
         mViewModel.getUser().observe(this, user -> {
             Timber.d("displaying data");
-            mDisplayInfoTextView.setText(user.getName());
+            mDisplayInfoTextView.setText(user != null ? user.getName() : "No Data!!");
         });
     }
 

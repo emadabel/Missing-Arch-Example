@@ -1,13 +1,18 @@
 package com.emadabel.missingarchexample.data.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Entity
 public class User {
 
     @SerializedName("login")
     @Expose
     private String userId;
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     private int id;

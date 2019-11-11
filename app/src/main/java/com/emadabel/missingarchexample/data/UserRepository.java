@@ -1,13 +1,14 @@
 package com.emadabel.missingarchexample.data;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 
+import com.emadabel.missingarchexample.data.database.UserDao;
 import com.emadabel.missingarchexample.data.model.User;
 import com.emadabel.missingarchexample.data.network.Webservice;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import java.io.IOException;
+import java.util.concurrent.Executor;
+
 import retrofit2.Response;
 import timber.log.Timber;
 
@@ -15,10 +16,14 @@ public class UserRepository {
 
     private Webservice mWebservice;
     private UserCache mUserCache;
+    private UserDao mUserDao;
+    private Executor mExecutor;
 
-    public UserRepository(Webservice webservice, UserCache userCache) {
+    public UserRepository(Webservice webservice, UserCache userCache, UserDao userDao, Executor executor) {
         mWebservice = webservice;
         mUserCache = userCache;
+        mUserDao = userDao;
+        mExecutor = executor;
     }
 
     public LiveData<User> getUser(String userId) {
@@ -28,9 +33,11 @@ public class UserRepository {
             return cached;
         }
 
-        final MutableLiveData<User> data = new MutableLiveData<>();
-        mUserCache.put(userId, data);
-        // this is still suboptimal but better than before.
+        //final MutableLiveData<User> data = new MutableLiveData<>();
+        mUserCache.put(userId, mUserDao.load(userId));
+
+        refreshUser(userId);
+        /*// this is still suboptimal but better than before.
         // a complete implementation must also handle the error cases.
         mWebservice.getUser(userId).enqueue(new Callback<User>() {
             @Override
@@ -44,7 +51,27 @@ public class UserRepository {
             public void onFailure(Call<User> call, Throwable t) {
                 Timber.d("Could not connect to the server");
             }
+        });*/
+
+        return mUserDao.load(userId);
+    }
+
+    private void refreshUser(String userId) {
+        mExecutor.execute(() -> {
+            // running in a background thread
+            // check if user was fetched recently
+            boolean userExists = mUserDao.hasUser(userId);
+            if (!userExists) {
+                try {
+                    // refresh the data
+                    Response<User> response = mWebservice.getUser(userId).execute();
+                    // Update the database.The LiveData will automatically refresh so
+                    // we don't need to do anything else here besides updating the database
+                    mUserDao.save(response.body());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         });
-        return data;
     }
 }
