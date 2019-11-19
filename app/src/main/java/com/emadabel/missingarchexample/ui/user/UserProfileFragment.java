@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.emadabel.missingarchexample.R;
+import com.emadabel.missingarchexample.data.network.Status;
 import com.emadabel.missingarchexample.utilities.InjectorUtils;
 
 import butterknife.BindView;
@@ -47,7 +48,12 @@ public class UserProfileFragment extends Fragment {
         mViewModel.init(userId);
         mViewModel.getUser().observe(this, user -> {
             Timber.d("displaying data");
-            mDisplayInfoTextView.setText(user != null ? user.getName() : "No Data!!");
+            if (user != null && user.status == Status.SUCCESS)
+                mDisplayInfoTextView.setText(user.data.getName());
+            else if (user != null && user.status == Status.LOADING)
+                mDisplayInfoTextView.setText("Loading ...");
+            else if (user != null && user.status == Status.ERROR)
+                mDisplayInfoTextView.setText("No Data!!");
         });
     }
 

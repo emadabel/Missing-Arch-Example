@@ -5,12 +5,13 @@ import android.arch.lifecycle.ViewModel;
 
 import com.emadabel.missingarchexample.data.UserRepository;
 import com.emadabel.missingarchexample.data.model.User;
+import com.emadabel.missingarchexample.data.network.Resource;
 
 import timber.log.Timber;
 
 public class UserProfileViewModel extends ViewModel {
 
-    private LiveData<User> mUser;
+    private LiveData<Resource<User>> mUser;
     private UserRepository mRepository;
 
     public UserProfileViewModel(UserRepository repository) {
@@ -28,7 +29,7 @@ public class UserProfileViewModel extends ViewModel {
         mUser = mRepository.getUser(userId);
     }
 
-    public LiveData<User> getUser() {
+    public LiveData<Resource<User>> getUser() {
         return mUser;
     }
 }

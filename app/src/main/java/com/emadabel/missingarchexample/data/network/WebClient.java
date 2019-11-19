@@ -1,5 +1,7 @@
 package com.emadabel.missingarchexample.data.network;
 
+import com.emadabel.missingarchexample.utilities.LiveDataCallAdapterFactory;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -17,6 +19,7 @@ public class WebClient {
                 .client(new OkHttpClient())
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build();
         mWebservice = retrofit.create(Webservice.class);
     }

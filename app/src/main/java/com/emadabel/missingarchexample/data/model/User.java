@@ -1,6 +1,7 @@
 package com.emadabel.missingarchexample.data.model;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -110,6 +111,7 @@ public class User {
     public User() {
     }
 
+    @Ignore
     public User(String userId, int id, String nodeId, String avatarUrl, String gravatarId, String url, String htmlUrl, String followersUrl, String followingUrl, String gistsUrl, String starredUrl, String subscriptionsUrl, String organizationsUrl, String reposUrl, String eventsUrl, String receivedEventsUrl, String type, boolean siteAdmin, String name, String company, String blog, String location, String email, boolean hireable, String bio, int publicRepos, int publicGists, int followers, int following, String createdAt, String updatedAt) {
         super();
         this.userId = userId;
